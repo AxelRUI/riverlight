@@ -1,0 +1,26 @@
+[package]
+name = "dota-plus-local"
+version = "0.1.0"
+description = "Overlay local tipo Dota Plus alimentado por Game State Integration"
+authors = ["Axel"]
+edition = "2024"
+
+[lib]
+# Sufijo _lib necesario en Windows: https://github.com/rust-lang/cargo/issues/8519
+name = "dota_plus_local_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde_json = "1"
+tiny_http = "0.12"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true

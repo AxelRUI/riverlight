@@ -21,18 +21,54 @@ body {
   color: var(--text);
 }
 
+/* Paneles movibles: el asistente arriba a la derecha y el de items a su izquierda por defecto */
+.movable { position: fixed; top: 110px; right: 12px; }
+#items-hud { right: 252px; }
+.movable[hidden] { display: none; }
+
 .panel {
-  position: fixed;
-  top: 110px;
-  right: 12px;
   width: 230px;
+  zoom: var(--scale, 1);
+  opacity: var(--opacity, 1);
   background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
   border: 1px solid var(--edge);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 0 10px rgba(0, 0, 0, 0.8);
 }
-.panel[hidden] { display: none; }
+
+/* Modo mover (Ctrl+Shift+M): el overlay captura el mouse, se oscurece un poco para que se note */
+body.editing { background: rgba(0, 0, 0, 0.25); height: 100vh; }
+body.editing .movable { outline: 1px dashed var(--gold-dim); cursor: move; }
+/* El panel seleccionado (al que aplican los sliders) se marca más fuerte */
+body.editing .movable.active-panel { outline: 1px solid var(--gold); }
+
+#editbar {
+  display: none;
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 18px;
+  padding: 6px 14px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--gold);
+  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  border: 1px solid var(--edge);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+body.editing #editbar { display: flex; }
+#editbar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 10px;
+}
+#editbar input { width: 110px; accent-color: var(--gold); }
 
 /* Línea dorada superior, como los paneles de Dota Plus */
 .panel::before {
@@ -68,6 +104,43 @@ body {
   text-transform: uppercase;
 }
 
+#sugg[hidden] { display: none; }
+.sub-title {
+  padding: 6px 10px 4px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+#phase { color: var(--gold-dim); }
+/* Íconos como en la guía de la tienda: marco negro y leve brillo superior */
+.src { padding: 0 10px 6px; }
+.src-name {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.items {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+}
+.items img {
+  width: 100%;
+  aspect-ratio: 88 / 64;
+  border: 1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px #000;
+}
+
+.items-error {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 #timers { list-style: none; margin: 0; padding: 4px 0 6px; }
 #timers li {
   display: flex;
@@ -83,3 +156,237 @@ body {
 #timers li.soon time { color: var(--soon); animation: pulse 1s ease-in-out infinite; }
 
 @keyframes pulse { 50% { opacity: 0.45; } }
+
+/* --- Draft --- */
+#draft[hidden], #game[hidden] { display: none; }
+.roles { display: flex; gap: 3px; padding: 0 10px 6px; }
+.roles button {
+  flex: 1;
+  padding: 3px 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  background: linear-gradient(180deg, #2a313a, #171b21);
+  border: 1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.roles button.active { color: #000; background: linear-gradient(180deg, var(--gold), var(--gold-dim)); }
+.chips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 0 10px 6px; min-height: 22px; }
+.chips img { width: 100%; aspect-ratio: 256 / 144; border: 1px solid #000; }
+body.drafting .chips img, body.drafting .roles button { cursor: pointer; }
+
+/* La caja de texto solo aparece en modo draft (Ctrl+Shift+D), cuando el overlay recibe teclado */
+.draft-input { display: none; align-items: center; gap: 6px; padding: 0 10px 6px; }
+body.drafting .draft-input { display: flex; }
+.draft-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #000;
+  outline: none;
+  box-shadow: inset 0 1px 3px #000;
+}
+.draft-input input:focus { border-color: var(--gold-dim); }
+#draft-match { font-size: 11px; color: var(--gold); white-space: nowrap; }
+
+#recs { list-style: none; margin: 0; padding: 0 10px 6px; }
+#recs li { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-size: 12px; }
+#recs li img { width: 40px; aspect-ratio: 256 / 144; border: 1px solid #000; }
+#recs li span { flex: 1; }
+#recs b { font-weight: 600; font-variant-numeric: tabular-nums; }
+#recs b.pos { color: #6fd36a; }
+#recs b.neg { color: #e0604f; }
+
+.hint { padding: 4px 10px 6px; font-size: 9px; color: var(--muted); border-top: 1px solid rgba(255, 255, 255, 0.05); }
+body:not(.drafting) .hint { display: none; }
+
+/* Item que se arma con algo que ya compraste: marco dorado como los items destacados de la tienda */
+.items img.upgrade { border-color: var(--gold); box-shadow: 0 0 4px var(--gold-dim), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+
+/* --- Contra enemigos: [enemigo] → [item][item] --- */
+#counter-list { list-style: none; margin: 0; padding: 0 10px 6px; }
+#counter-list li { display: flex; align-items: center; gap: 4px; padding: 2px 0; }
+#counter-list img { width: 34px; aspect-ratio: 88 / 64; border: 1px solid #000; box-shadow: 0 1px 2px #000; }
+#counter-list img.enemy { width: 44px; aspect-ratio: 256 / 144; }
+#counter-list .arrow { color: var(--gold-dim); font-size: 12px; padding: 0 2px; }
+#draft.ingame .picks { display: none; }
+
+/* Roshan / Tormentor */
+#timers li.ready time { color: #6fd36a; font-weight: 600; letter-spacing: 1px; }
+#timers li.maybe time { color: var(--gold); }
+
+/* Prioridad: items que se repiten entre counters de varios enemigos */
+#counter-list li.priority {
+  margin-bottom: 3px;
+  padding: 3px 4px;
+  background: linear-gradient(90deg, rgba(227, 199, 124, 0.18), transparent);
+  border-left: 2px solid var(--gold);
+}
+.priority-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-right: 4px; }
+.counted { position: relative; display: inline-block; }
+.counted img { border-color: var(--gold) !important; }
+.counted b {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  font-size: 9px;
+  color: #fff;
+  text-shadow: 0 0 2px #000, 0 0 2px #000;
+}
+
+
+/* --- Overlay del minimapa (stacks y pulls) --- */
+#minimap { position: fixed; right: 12px; bottom: 12px; width: 240px; height: 240px; pointer-events: none; }
+#minimap[hidden] { display: none; }
+#mm-svg { width: 100%; height: 100%; overflow: visible; }
+#mm-svg .arr { stroke-linecap: round; filter: drop-shadow(0 0 1px #000); }
+/* prep: 20 s antes, tenue para ir caminando · soon: últimos 10 s, marcado · now: el segundo exacto, parpadea */
+#mm-svg .arr.prep { opacity: 0.3; }
+#mm-svg .arr.soon { opacity: 0.9; stroke-width: 1.1; }
+#mm-svg .arr.now { animation: pulse 0.5s ease-in-out infinite; stroke-width: 1.3; }
+#mm-svg .camp.prep { opacity: 0.6; }
+#mm-svg .camp.soon { stroke-width: 0.8; }
+#mm-svg .camp.now { stroke: var(--soon); stroke-width: 1; }
+#mm-svg .camp { fill: rgba(0, 0, 0, 0.6); stroke: #e3c77c; stroke-width: 0.5; }
+#mm-svg .camp.ancient { stroke: #c77cff; }
+#mm-svg .camp.small { stroke: #9fb2c4; }
+#mm-svg .lbl { font-size: 3.2px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: #000; stroke-width: 0.6px; }
+#mm-svg .lbl.prep { opacity: 0.6; }
+#mm-svg .lbl.soon { fill: var(--gold); font-weight: 700; }
+#mm-svg .lbl.now { fill: var(--soon); font-weight: 700; }
+#mm-svg .lbl.pull { fill: #6fd36a; }
+#mm-bar, #mm-resize, #mm-info { display: none; }
+
+/* Edición (modo mover) */
+#minimap.editing { pointer-events: auto; outline: 1px dashed var(--gold); background: rgba(0, 0, 0, 0.2); }
+#minimap.editing #mm-bar {
+  display: block; position: absolute; bottom: 100%; left: 0; right: 0; padding: 3px 6px;
+  font-size: 10px; letter-spacing: 1px; color: var(--gold); background: var(--bg-bottom); cursor: move;
+}
+#minimap.editing #mm-resize {
+  display: block; position: absolute; right: -5px; bottom: -5px; width: 10px; height: 10px;
+  background: var(--gold); cursor: nwse-resize;
+}
+#minimap.editing #mm-info {
+  display: block; position: absolute; right: 0; bottom: calc(100% + 22px); width: 340px; padding: 6px 8px;
+  font-size: 11px; color: var(--text); background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  border: 1px solid var(--edge);
+}
+#mm-info .keys { margin: 3px 0 5px; font-size: 9px; color: var(--muted); }
+#mm-info button { font: inherit; font-size: 10px; color: var(--muted); background: #171b21; border: 1px solid #000; padding: 2px 6px; }
+#minimap.editing .camp { cursor: move; }
+#minimap.editing .camp.sel { stroke: #fff; stroke-width: 0.9; }
+#mm-svg .handle { fill: #e3c77c; opacity: 0.8; cursor: crosshair; }
+#mm-svg .handle.pull { fill: #6fd36a; }
+
+/* --- Build de habilidades --- */
+#skills[hidden] { display: none; }
+.skill-row { display: flex; align-items: center; gap: 8px; padding: 0 10px 4px; }
+#skill-img { width: 32px; height: 32px; border: 1px solid #000; box-shadow: 0 1px 2px #000; }
+#skill-img[hidden] { display: none; }
+#skill-name { font-size: 12px; color: #fff; }
+#skill-talent { font-size: 10px; color: var(--gold-dim); }
+.skill-next { display: flex; gap: 3px; padding: 0 10px 6px 50px; }
+.skill-next img { width: 20px; height: 20px; border: 1px solid #000; opacity: 0.75; }
+/* Puntos sin gastar: marco dorado que parpadea, como el botón de subir habilidad de Dota */
+#skills.pending #skill-img { border-color: var(--gold); animation: pulse 1s ease-in-out infinite; }
+#skills.pending #skill-name { color: var(--gold); }
+
+/* Percentil en vivo bajo cada stat (verde ≥ p60, dorado p40-59, rojo < p40) */
+.stats .pct { font-size: 9px; font-weight: 600; font-variant-numeric: tabular-nums; min-height: 11px; }
+.stats .pct.good { color: #6fd36a; }
+.stats .pct.mid { color: var(--gold); }
+.stats .pct.bad { color: #e0604f; }
+
+/* --- Resumen post-partida --- */
+#post[hidden] { display: none; }
+#post { padding-bottom: 6px; }
+#post .muted { font-size: 10px; color: var(--muted); }
+.post-head { display: flex; align-items: center; gap: 8px; padding: 6px 10px; }
+.post-hero { width: 56px; aspect-ratio: 256 / 144; border: 1px solid #000; }
+.post-head .win { color: #6fd36a; font-weight: 600; }
+.post-head .loss { color: #e0604f; font-weight: 600; }
+.post-stats { display: grid; grid-template-columns: repeat(4, 1fr); padding: 0 10px 4px; font-size: 12px; text-align: center; }
+.post-stats div { display: flex; flex-direction: column; }
+.post-stats .pct { font-size: 9px; font-weight: 600; }
+.post-stats .pct.good { color: #6fd36a; }
+.post-stats .pct.mid { color: var(--gold); }
+.post-stats .pct.bad { color: #e0604f; }
+/* Barra de daño recibido con los colores de Dota: físico rojo, mágico azul, puro dorado */
+.dmg-bar { display: flex; height: 8px; margin: 0 10px 3px; border: 1px solid #000; }
+.dmg-bar .phys { background: #c0392b; }
+.dmg-bar .mag { background: #2e86de; }
+.dmg-bar .pure { background: #e3c77c; }
+#post > div > .muted, #post .who .muted { padding: 0 10px 4px; }
+.who { display: flex; flex-wrap: wrap; gap: 4px; padding: 2px 10px 4px; }
+.who-item { position: relative; }
+.who-item img { width: 44px; aspect-ratio: 256 / 144; border: 1px solid #000; }
+.who-item b { position: absolute; right: 1px; bottom: 0; font-size: 9px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; }
+.who .muted { width: 100%; padding: 0 !important; }
+.deaths { list-style: none; margin: 0; padding: 0 10px; }
+.deaths li { display: flex; align-items: center; gap: 5px; padding: 2px 0; font-size: 11px; flex-wrap: wrap; }
+.deaths img { width: 32px; aspect-ratio: 256 / 144; border: 1px solid #000; }
+
+/* Atajos en la barra del modo mover */
+#editbar { flex-wrap: wrap; max-width: 760px; justify-content: center; }
+#keybinds { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; justify-content: center; padding-top: 4px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.keybind { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.keybind button {
+  font: inherit; font-size: 11px; text-transform: none; color: var(--text); padding: 2px 8px; cursor: pointer;
+  background: linear-gradient(180deg, #2a313a, #171b21); border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.keybind button.capturing { color: #000; background: linear-gradient(180deg, var(--gold), var(--gold-dim)); }
+.key-error { color: #e0604f; text-transform: none; }
+
+/* Historial de partidas (modo post): fecha · héroe · V/D K/D/A · IMP */
+.history { list-style: none; margin: 0; padding: 0 6px; max-height: 168px; overflow-y: auto; }
+.history li { display: flex; align-items: center; gap: 5px; padding: 2px 4px; font-size: 11px; cursor: pointer; border-left: 2px solid transparent; }
+.history li:hover { background: rgba(255, 255, 255, 0.05); }
+.history li.sel { background: rgba(227, 199, 124, 0.15); border-left-color: var(--gold); }
+.history img { width: 32px; aspect-ratio: 256 / 144; border: 1px solid #000; }
+.history .win { color: #6fd36a; }
+.history .loss { color: #e0604f; }
+.match-input {
+  display: block; width: calc(100% - 20px); margin: 4px 10px 6px; padding: 3px 6px; font: inherit; font-size: 11px;
+  color: var(--text); background: rgba(0, 0, 0, 0.5); border: 1px solid #000; outline: none; box-sizing: border-box;
+}
+body.posting .match-input:focus { border-color: var(--gold-dim); }
+
+/* --- Ventana de configuración (admin.html): ventana normal, opaca y con scroll --- */
+html:has(body.admin), body.admin { background: radial-gradient(ellipse at top, #1b222b, #0b0e12 70%); overflow-y: auto; user-select: text; }
+body.admin { min-height: 100vh; padding: 0 16px 20px; box-sizing: border-box; font-size: 13px; }
+.admin-title { display: flex; align-items: baseline; gap: 10px; padding: 16px 2px 10px; border-bottom: 1px solid rgba(227, 199, 124, 0.3); margin-bottom: 12px; }
+.admin-title span { font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); text-shadow: 0 1px 3px #000; }
+.admin-title small { color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.admin .card {
+  margin-bottom: 12px; padding: 10px 12px 12px;
+  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)); border: 1px solid var(--edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 10px rgba(0, 0, 0, 0.6);
+}
+.admin .card::before { content: ""; display: block; height: 2px; margin: -10px -12px 8px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.admin h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.admin .label { display: block; margin: 10px 0 4px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text); }
+.admin .muted { color: var(--muted); font-size: 11px; text-transform: none; letter-spacing: 0; }
+.admin .row { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.admin .row.end { justify-content: flex-end; margin-top: 10px; }
+.admin input[type="password"], .admin input[type="text"] {
+  flex: 1; width: 100%; box-sizing: border-box; padding: 6px 8px; font: inherit; color: var(--text);
+  background: rgba(0, 0, 0, 0.5); border: 1px solid #000; outline: none; box-shadow: inset 0 1px 3px #000;
+}
+.admin input:focus { border-color: var(--gold-dim); }
+.admin button {
+  padding: 5px 14px; font: inherit; font-size: 12px; color: #000; cursor: pointer; white-space: nowrap;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dim)); border: 1px solid #000;
+}
+.admin button.ghost { color: var(--text); background: linear-gradient(180deg, #2a313a, #171b21); padding: 5px 8px; }
+.admin code { flex: 1; padding: 5px 8px; font-family: Consolas, monospace; color: #fff; background: rgba(0, 0, 0, 0.5); border: 1px solid #000; }
+.admin .steps { margin: 8px 0 0; padding-left: 18px; color: var(--text); line-height: 1.5; font-size: 12px; }
+.admin .check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.admin .check input { accent-color: var(--gold); width: 16px; height: 16px; }
+.admin .ok { color: #6fd36a; font-size: 11px; }
+.admin .bad { color: #e0604f; font-size: 11px; }
+#shortcuts { color: var(--text); font-size: 12px; margin-bottom: 4px; }

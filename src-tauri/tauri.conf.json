@@ -14,14 +14,23 @@
     "windows": [
       {
         "label": "main",
+        "create": false,
         "title": "Dota Plus Local",
         "transparent": true,
         "decorations": false,
         "shadow": false,
         "alwaysOnTop": true,
-        "maximized": true,
         "resizable": false,
         "focus": false
+      },
+      {
+        "label": "admin",
+        "url": "admin.html",
+        "title": "Dota Plus Local · Configuración",
+        "width": 560,
+        "height": 720,
+        "center": true,
+        "create": false
       }
     ],
     "security": {

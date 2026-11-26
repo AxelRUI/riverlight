@@ -10,6 +10,8 @@ export default defineConfig(() => ({
   //
   // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
+  // Dos páginas: el overlay (index.html) y la ventana de configuración (admin.html).
+  build: { rollupOptions: { input: { main: "index.html", admin: "admin.html" } } },
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
     port: 1420,

@@ -7,14 +7,89 @@
     <script type="module" src="/src/main.ts" defer></script>
   </head>
   <body>
-    <section id="hud" class="panel" hidden>
-      <header class="panel-title">Asistente</header>
-      <div class="stats">
-        <div><span class="lbl">LH / DN</span><span id="lhdn">0 / 0</span></div>
-        <div><span class="lbl">GPM</span><span id="gpm">0</span></div>
-        <div><span class="lbl">XPM</span><span id="xpm">0</span></div>
+    <!-- Panel de items: aparece con la tienda abierta; se posiciona aparte del asistente (modo mover) -->
+    <section id="items-hud" class="movable" hidden>
+      <div class="panel">
+        <header class="panel-title">Items</header>
+        <section id="sugg" hidden>
+          <header class="sub-title">Sugeridos · <span id="phase"></span></header>
+          <div id="sources"></div>
+        </section>
+        <section id="counters">
+          <header class="sub-title">Contra enemigos · <span id="counter-role"></span></header>
+          <ul id="counter-list"></ul>
+        </section>
       </div>
-      <ul id="timers"></ul>
     </section>
+
+    <!-- #hud se posiciona; .panel escala (zoom) y se transparenta, así top/left no se deforman -->
+    <section id="hud" class="movable" hidden>
+      <div class="panel">
+        <header class="panel-title">Asistente</header>
+        <div id="game">
+          <!-- Cada stat con su percentil contra el héroe (OpenDota) desde el 10:00 -->
+          <div class="stats">
+            <div><span class="lbl">LH / DN</span><span id="lhdn">0 / 0</span><span class="pct" id="pct-lh"></span></div>
+            <div><span class="lbl">GPM</span><span id="gpm">0</span><span class="pct" id="pct-gpm"></span></div>
+            <div><span class="lbl">XPM</span><span id="xpm">0</span><span class="pct" id="pct-xpm"></span></div>
+            <div><span class="lbl">K / D / A</span><span id="kda">0/0/0</span><span class="pct" id="pct-kda"></span></div>
+          </div>
+          <!-- Build de habilidades (STRATZ): qué subir ahora y lo que sigue -->
+          <section id="skills" hidden>
+            <header class="sub-title">Habilidades · <span id="skill-role"></span></header>
+            <div class="skill-row">
+              <img id="skill-img" alt="" />
+              <div><div id="skill-name"></div><div id="skill-talent"></div></div>
+            </div>
+            <div id="skill-next" class="skill-next"></div>
+          </section>
+          <ul id="timers"></ul>
+        </div>
+
+        <!-- Fase de selección: picks enemigos escritos a mano con Ctrl+Shift+D -->
+        <!-- Resumen de la última partida (STRATZ): Ctrl+Shift+P -->
+        <div id="post" hidden></div>
+
+        <div id="draft" hidden>
+          <div class="sub-title">Tu rol</div>
+          <div id="roles" class="roles"></div>
+          <div class="sub-title">Enemigos</div>
+          <div id="enemies" class="chips"></div>
+          <div class="draft-input">
+            <input id="draft-input" placeholder="Héroe enemigo… (am, qop, axe)" autocomplete="off" spellcheck="false" />
+            <span id="draft-match"></span>
+          </div>
+          <!-- Picks recomendados: solo durante la selección, no a media partida -->
+          <div class="picks">
+            <div class="sub-title">Recomendados · <span id="draft-role"></span></div>
+            <ul id="recs"></ul>
+          </div>
+          <div class="hint" id="draft-hint">Ctrl+Shift+D: escribir · Enter: agregar · 1-5: rol · rosh / torm: marcar muerte · Retroceso: quitar · Esc: cerrar</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overlay del minimapa: flechas de stack/pull. Se alinea y edita en modo mover. -->
+    <section id="minimap" hidden>
+      <div id="mm-bar">Minimapa · arrastra para alinear</div>
+      <svg id="mm-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <defs>
+          <marker id="ah-stack" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3" markerHeight="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#e3c77c" /></marker>
+          <marker id="ah-double" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3" markerHeight="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#e3c77c" /></marker>
+          <marker id="ah-pull" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3" markerHeight="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#6fd36a" /></marker>
+        </defs>
+        <g id="mm-layer"></g>
+      </svg>
+      <div id="mm-resize"></div>
+      <div id="mm-info"></div>
+    </section>
+
+    <div id="editbar">
+      <span id="edit-hint">Arrastra los paneles · Clic: elegir panel para tamaño/opacidad · Doble clic: restablecer ese panel · Ctrl+Shift+M: fijar</span>
+      <label>Tamaño <input id="scale" type="range" min="0.6" max="2" step="0.05" value="1" /></label>
+      <label>Opacidad <input id="opacity" type="range" min="0.2" max="1" step="0.05" value="1" /></label>
+      <!-- Atajos: clic en uno y presiona la tecla nueva (Esc cancela) -->
+      <div id="keybinds"></div>
+    </div>
   </body>
 </html>

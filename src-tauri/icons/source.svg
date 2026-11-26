@@ -1,0 +1,45 @@
+<!-- Ícono de Dota Plus Local (fuente de todos los tamaños: `npx tauri icon src-tauri/icons/source.svg`).
+     Mapa partido Radiant/Dire con el río en diagonal y el "+" dorado de Plus.
+     Diseño original: no usa el logo de Dota (marca de Valve). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="radiant" x1="0" y1="1" x2="0.6" y2="0.4">
+      <stop offset="0" stop-color="#3f8a3a" />
+      <stop offset="1" stop-color="#1b3a1a" />
+    </linearGradient>
+    <linearGradient id="dire" x1="1" y1="0" x2="0.4" y2="0.6">
+      <stop offset="0" stop-color="#a3261d" />
+      <stop offset="1" stop-color="#3a0e0b" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbeab0" />
+      <stop offset="0.5" stop-color="#e3c77c" />
+      <stop offset="1" stop-color="#9c7a35" />
+    </linearGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0.45" stop-color="#000" stop-opacity="0" />
+      <stop offset="1" stop-color="#000" stop-opacity="0.65" />
+    </radialGradient>
+    <clipPath id="tile">
+      <rect x="48" y="48" width="928" height="928" rx="200" />
+    </clipPath>
+  </defs>
+
+  <!-- Mapa: Dire arriba a la derecha, Radiant abajo a la izquierda, río en diagonal -->
+  <g clip-path="url(#tile)">
+    <rect x="48" y="48" width="928" height="928" fill="url(#dire)" />
+    <polygon points="48,48 48,976 976,976" fill="url(#radiant)" />
+    <!-- Río: un solo azul con borde oscuro -->
+    <line x1="0" y1="0" x2="1024" y2="1024" stroke="#0d2a3c" stroke-width="150" />
+    <line x1="0" y1="0" x2="1024" y2="1024" stroke="#2b7fae" stroke-width="110" />
+    <rect x="48" y="48" width="928" height="928" fill="url(#vignette)" />
+  </g>
+
+  <!-- Marco dorado -->
+  <rect x="62" y="62" width="900" height="900" rx="188" fill="none" stroke="url(#gold)" stroke-width="28" />
+
+  <!-- "+" de Plus: sombra, borde oscuro y relleno dorado -->
+  <path d="M432 232h160v200h200v160H592v200H432V592H232V432h200z" fill="#000" opacity="0.45" transform="translate(10 14)" />
+  <path d="M432 232h160v200h200v160H592v200H432V592H232V432h200z" fill="url(#gold)" stroke="#2a1a08" stroke-width="18" stroke-linejoin="round" />
+  <path d="M448 250h128v196" fill="none" stroke="#fff6d6" stroke-width="10" stroke-opacity="0.55" stroke-linecap="round" />
+</svg>

@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Datos personales: claves, tokens y configuración local nunca van al repo
+# (la app guarda la suya en %APPDATA%\app.dotapluslocal\config.json, fuera del proyecto)
+.env
+.env.*
+/config.json
+*.token

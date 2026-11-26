@@ -1,10 +1,11 @@
+import { t } from "./i18n";
 // shortcut: tiempos del parche 7.3x escritos a mano, revisar con cada parche grande.
 export const EVENTS = [
-  { name: "Runa de recompensa", start: 0, every: 180 },
-  { name: "Runa de poder", start: 360, every: 120 },
-  { name: "Runa de sabiduría", start: 420, every: 420 },
-  { name: "Loto", start: 180, every: 180 },
-  { name: "Stack de neutrales", start: 113, every: 60 },
+  { name: t("Runa de recompensa"), start: 0, every: 180 },
+  { name: t("Runa de poder"), start: 360, every: 120 },
+  { name: t("Runa de sabiduría"), start: 420, every: 420 },
+  { name: t("Loto"), start: 180, every: 180 },
+  { name: t("Stack de neutrales"), start: 113, every: 60 },
 ];
 
 // shortcut: tiempos del parche 7.3x (Roshan 8-11 min, Tormentor 15:00 y 10 min tras morir); revisar con parches grandes.

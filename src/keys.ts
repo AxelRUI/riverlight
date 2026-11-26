@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Atajos configurables desde el modo mover. Se guardan en localStorage y se aplican en Rust al arrancar.
 // - "shop": tecla de tienda de Dota, solo se LEE (Dota la sigue recibiendo); va sin modificadores.
 // - "edit" / "draft" / "post": atajos globales (registrados en Windows), siempre con Ctrl/Alt/Shift.
@@ -6,7 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export type Action = "shop" | "edit" | "draft" | "post";
 export const ACTIONS: Action[] = ["shop", "edit", "draft", "post"];
-export const ACTION_LABEL: Record<Action, string> = { shop: "Tienda", edit: "Mover", draft: "Draft", post: "Resumen" };
+export const ACTION_LABEL: Record<Action, string> = { shop: t("Tienda"), edit: t("Mover"), draft: "Draft", post: t("Resumen") };
 const DEFAULTS: Record<Action, string> = { shop: "F4", edit: "Control+Shift+KeyM", draft: "Control+Shift+KeyD", post: "Control+Shift+KeyP" };
 const STORE = "keys";
 
@@ -53,21 +54,21 @@ export function fromEvent(a: Action, e: KeyboardEvent): string | null {
 
 async function apply(a: Action, value: string) {
   if (a === "shop") {
-    if (value === "Escape") throw new Error("Esc ya cierra la tienda");
+    if (value === "Escape") throw new Error(t("Esc ya cierra la tienda"));
     const code = vk(value);
-    if (code === null) throw new Error("esa tecla no está soportada");
+    if (code === null) throw new Error(t("esa tecla no está soportada"));
     await invoke("set_shop_key", { vk: code });
   } else if (value.startsWith("Mouse")) {
     await invoke("set_mouse_bind", { action: a, vk: vk(value) });
   } else {
-    await invoke("set_shortcut", { action: a, accel: value });
+    await invoke("set_shortcut", { action: a, accel: value }).catch((e) => { throw new Error(t(String(e))); });
   }
 }
 
 /** Cambia y guarda un atajo. Rechaza (con el motivo) si Rust no lo acepta: sin modificador, repetido u ocupado. */
 export async function setKey(a: Action, value: string) {
   const taken = ACTIONS.find((o) => o !== a && keys[o] === value);
-  if (taken) throw new Error(`ya lo usa ${ACTION_LABEL[taken]}`);
+  if (taken) throw new Error(t("ya lo usa {name}", { name: ACTION_LABEL[taken] }));
   await apply(a, value);
   keys = { ...keys, [a]: value };
   localStorage.setItem(STORE, JSON.stringify(keys));

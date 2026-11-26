@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Items counter por héroe enemigo. Ninguna API pública da "item contra héroe", así que es una tabla curada:
 // cada héroe tiene rasgos (evasión, invisibilidad...) y cada rasgo tiene items para cores (pos 1-3) y soportes (4-5).
 // shortcut: tabla a mano del parche 7.3x; revisar con parches grandes o héroes nuevos.
@@ -7,18 +8,18 @@ type Trait =
   | "physical" | "disable" | "mobile" | "targeted" | "buffs" | "mana";
 
 export const TRAIT_LABEL: Record<Trait, string> = {
-  evasion: "evasión",
-  break: "pasivas",
-  invis: "invisibilidad",
-  magic: "daño mágico",
-  heal: "curación",
-  illusions: "ilusiones/unidades",
-  physical: "daño físico",
-  disable: "control",
-  mobile: "movilidad",
-  targeted: "ulti a objetivo",
+  evasion: t("evasión"),
+  break: t("pasivas"),
+  invis: t("invisibilidad"),
+  magic: t("daño mágico"),
+  heal: t("curación"),
+  illusions: t("ilusiones/unidades"),
+  physical: t("daño físico"),
+  disable: t("control"),
+  mobile: t("movilidad"),
+  targeted: t("ulti a objetivo"),
   buffs: "buffs",
-  mana: "maná",
+  mana: t("maná"),
 };
 
 const ITEMS: Record<Trait, { core: string[]; support: string[] }> = {

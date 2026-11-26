@@ -3,77 +3,87 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Dota Plus Local · Configuración</title>
+    <title>Dota Plus Local</title>
     <script type="module" src="/src/admin.ts" defer></script>
   </head>
   <body class="admin">
+    <!-- Textos en español = clave de traducción (src/i18n.ts); se traducen al cargar según el idioma elegido -->
     <header class="admin-title">
       <span>Dota Plus Local</span>
-      <small>Configuración</small>
+      <small data-i18n>Configuración</small>
     </header>
 
     <!-- 1. Conectar con Dota: archivo GSI + opción de lanzamiento de Steam -->
     <section class="card">
-      <h2>1 · Conectar con Dota</h2>
+      <h2 data-i18n>1 · Conectar con Dota</h2>
       <div class="row">
         <div>
-          <div class="label">Archivo de integración (GSI)</div>
-          <div id="gsi-status" class="muted">Buscando Dota…</div>
+          <div class="label" data-i18n>Archivo de integración (GSI)</div>
+          <div id="gsi-status" class="muted" data-i18n>Buscando Dota…</div>
         </div>
-        <button id="gsi-install">Instalar</button>
+        <button id="gsi-install" data-i18n>Instalar</button>
       </div>
 
-      <div class="label">Opción de lanzamiento en Steam</div>
+      <div class="label" data-i18n>Opción de lanzamiento en Steam</div>
       <div class="row">
         <code id="launch">-gamestateintegration</code>
-        <button id="copy-launch">Copiar</button>
+        <button id="copy-launch" data-i18n>Copiar</button>
       </div>
       <ol class="steps">
-        <li>Abre <b>Steam → Biblioteca</b>.</li>
-        <li>Clic derecho en <b>Dota 2 → Propiedades</b>.</li>
-        <li>En <b>General → Opciones de lanzamiento</b>, pega el texto de arriba (si ya hay otras opciones, déjalas y agrega esta separada por un espacio).</li>
-        <li>En Dota, pon <b>Opciones → Video → Modo de ventana: Ventana sin bordes</b>. En pantalla completa el overlay no se ve.</li>
-        <li>Para el resumen post-partida: <b>Opciones → Social → Exponer datos públicos de partidas</b>.</li>
-        <li>Reinicia Dota si estaba abierto (lee el archivo GSI al arrancar).</li>
+        <li data-i18n-html>Abre <b>Steam → Biblioteca</b>.</li>
+        <li data-i18n-html>Clic derecho en <b>Dota 2 → Propiedades</b>.</li>
+        <li data-i18n-html>En <b>General → Opciones de lanzamiento</b>, pega el texto de arriba (si ya hay otras opciones, déjalas y agrega esta separada por un espacio).</li>
+        <li data-i18n-html>En Dota, pon <b>Opciones → Video → Modo de ventana: Ventana sin bordes</b>. En pantalla completa el overlay no se ve.</li>
+        <li data-i18n-html>Para el resumen post-partida: <b>Opciones → Social → Exponer datos públicos de partidas</b>.</li>
+        <li data-i18n>Reinicia Dota si estaba abierto (lee el archivo GSI al arrancar).</li>
       </ol>
     </section>
 
     <!-- 2. Claves de API -->
     <section class="card">
-      <h2>2 · Claves de API</h2>
-      <label class="label" for="stratz">STRATZ <span class="muted">(builds por rol, habilidades, resumen post-partida)</span></label>
+      <h2 data-i18n>2 · Claves de API</h2>
+      <label class="label" for="stratz">STRATZ <span class="muted" data-i18n>(builds por rol, habilidades, resumen post-partida)</span></label>
       <div class="row">
         <input id="stratz" type="password" autocomplete="off" spellcheck="false" />
-        <button id="toggle-stratz" class="ghost" title="Mostrar/ocultar">👁</button>
+        <button id="toggle-stratz" class="ghost" data-i18n-title="Mostrar/ocultar">👁</button>
       </div>
-      <div class="muted">Gratis: entra a <code>stratz.com/api</code> con tu cuenta de Steam y copia el token.</div>
+      <div class="muted" data-i18n-html>Gratis: entra a <code>stratz.com/api</code> con tu cuenta de Steam y copia el token.</div>
 
-      <label class="label" for="opendota">OpenDota <span class="muted">(opcional: más consultas por día)</span></label>
+      <label class="label" for="opendota">OpenDota <span class="muted" data-i18n>(opcional: más consultas por día)</span></label>
       <input id="opendota" type="password" autocomplete="off" spellcheck="false" />
-      <div class="muted">Funciona sin clave. Si quieres más límite: <code>opendota.com/api-keys</code>.</div>
+      <div class="muted" data-i18n-html>Funciona sin clave. Si quieres más límite: <code>opendota.com/api-keys</code>.</div>
 
       <div class="row end">
         <span id="keys-msg" class="muted"></span>
-        <button id="save-keys">Guardar claves</button>
+        <button id="save-keys" data-i18n>Guardar claves</button>
       </div>
     </section>
 
     <!-- 3. Inicio -->
     <section class="card">
-      <h2>3 · Inicio</h2>
+      <h2 data-i18n>3 · Inicio</h2>
       <label class="check">
         <input id="autostart" type="checkbox" />
-        <span>Arrancar con Windows <span class="muted">(en reposo: el overlay aparece solo al abrir Dota)</span></span>
+        <span><span data-i18n>Arrancar con Windows</span> <span class="muted" data-i18n>(en reposo: el overlay aparece solo al abrir Dota)</span></span>
       </label>
       <div id="autostart-msg" class="muted"></div>
     </section>
 
     <!-- 4. Atajos (se cambian en el juego) -->
     <section class="card">
-      <h2>4 · Atajos</h2>
+      <h2 data-i18n>4 · Atajos</h2>
       <div id="shortcuts"></div>
-      <div class="muted">Se cambian en el juego, dentro del modo mover.</div>
-      <div class="muted">La app vive en el ícono de la bandeja (junto al reloj): ahí está Configuración y Salir.</div>
+      <div class="muted" data-i18n>Se cambian en el juego, dentro del modo mover.</div>
+      <div class="muted" data-i18n>La app vive en el ícono de la bandeja (junto al reloj): ahí está Configuración y Salir.</div>
+    </section>
+
+    <!-- 5. Idioma -->
+    <section class="card">
+      <h2 data-i18n>5 · Idioma</h2>
+      <select id="lang">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+      </select>
     </section>
   </body>
 </html>

@@ -1,3 +1,4 @@
+import { applyI18n, t } from "./i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { DRAFT_STATES, ROLES, currentEnemies, currentRole, initDraft, onGameState, setCommandHandler, setDraftActive } from "./draft";
@@ -29,7 +30,10 @@ let drafting = false;
 let posting = false;
 let shopOpen = false;
 
+applyI18n();
 initDraft();
+// Cambiaste el idioma en Configuración: recargar el overlay con el nuevo idioma.
+listen("lang-changed", () => location.reload());
 initMinimap();
 initPost(showHud);
 
@@ -171,11 +175,11 @@ function renderSugg(label: string) {
               Object.assign(document.createElement("img"), {
                 src: i.img,
                 alt: i.dname,
-                title: i.upgrade ? `Completar: ${i.dname}` : i.dname,
+                title: i.upgrade ? t("Completar: {name}", { name: i.dname }) : i.dname,
                 className: i.upgrade ? "upgrade" : "",
               }),
             )
-          : [el("span", "items-error", `${error}. Reintento en 30 s.`)]),
+          : [el("span", "items-error", t("{error}. Reintento en 30 s.", { error: t(error ?? "") }))]),
       );
       const row = el("div", "src");
       row.append(el("span", "src-name", SOURCE_LABEL[s]), grid);
@@ -283,7 +287,7 @@ function renderCounters(heroId: number, owned: Set<string>) {
 
   const list = $("counter-list");
   if (!enemies.length) {
-    list.replaceChildren(el("li", "items-error", `${pretty(keyOf("draft"))} para agregar enemigos`));
+    list.replaceChildren(el("li", "items-error", t("{key} para agregar enemigos", { key: pretty(keyOf("draft")) })));
     return;
   }
   counterSuggestions(heroId, owned, enemies)
@@ -293,11 +297,11 @@ function renderCounters(heroId: number, owned: Set<string>) {
       const top = document.createElement("li");
       top.className = "priority";
       top.append(
-        el("span", "priority-label", "Prioridad"),
+        el("span", "priority-label", t("Prioridad")),
         ...priority.map((i) => {
           const wrap = el("span", "counted");
           wrap.append(
-            Object.assign(document.createElement("img"), { src: i.img, alt: i.dname, title: `${i.dname} · sirve contra ${i.count} enemigos` }),
+            Object.assign(document.createElement("img"), { src: i.img, alt: i.dname, title: t("{name} · sirve contra {n} enemigos", { name: i.dname, n: i.count }) }),
             el("b", "", `×${i.count}`),
           );
           return wrap;
@@ -310,7 +314,7 @@ function renderCounters(heroId: number, owned: Set<string>) {
           li.append(
             Object.assign(document.createElement("img"), { className: "enemy", src: enemy.img, alt: enemy.name, title: enemy.name }),
             el("span", "arrow", "→"),
-            ...items.map((i) => Object.assign(document.createElement("img"), { src: i.img, alt: i.dname, title: `${i.dname} · contra ${i.why}` })),
+            ...items.map((i) => Object.assign(document.createElement("img"), { src: i.img, alt: i.dname, title: t("{name} · contra {why}", { name: i.dname, why: i.why }) })),
           );
           return li;
         }),
@@ -318,7 +322,7 @@ function renderCounters(heroId: number, owned: Set<string>) {
     })
     .catch((e) => {
       lastCounters = ""; // reintentar en el siguiente tick
-      list.replaceChildren(el("li", "items-error", e instanceof Error ? e.message : String(e)));
+      list.replaceChildren(el("li", "items-error", t(e instanceof Error ? e.message : String(e))));
     });
 }
 
@@ -343,8 +347,8 @@ function renderSkills(heroId: number, heroLevel: number, abilities: Gsi["abiliti
       const img = $("skill-img") as HTMLImageElement;
       img.hidden = !next;
       if (next) Object.assign(img, { src: next.img, title: next.label });
-      $("skill-name").textContent = next ? `${pending ? "Sube" : "Siguiente"}: ${next.label}` : "";
-      $("skill-talent").textContent = talent ? `Talento: ${talent.label}` : "";
+      $("skill-name").textContent = next ? t(pending ? "Sube: {label}" : "Siguiente: {label}", { label: next.label }) : "";
+      $("skill-talent").textContent = talent ? t("Talento: {label}", { label: talent.label }) : "";
       $("skill-next").replaceChildren(
         ...upcoming.map((s) => Object.assign(document.createElement("img"), { src: s.img, alt: s.label, title: s.label })),
       );
@@ -353,7 +357,7 @@ function renderSkills(heroId: number, heroLevel: number, abilities: Gsi["abiliti
       skillsRetryAt = Date.now() + 30_000;
       lastSkills = "";
       $("skills").hidden = false;
-      $("skill-name").textContent = e instanceof Error ? e.message : String(e);
+      $("skill-name").textContent = t(e instanceof Error ? e.message : String(e));
       ($("skill-img") as HTMLImageElement).hidden = true;
     });
 }
@@ -376,7 +380,7 @@ function renderBench(heroId: number, clock: number, p: NonNullable<Gsi["player"]
         const el = $(`pct-${k}`);
         el.textContent = Number.isNaN(c[k]) ? "" : `p${c[k]}`;
         el.className = `pct ${c[k] >= 60 ? "good" : c[k] >= 40 ? "mid" : "bad"}`;
-        el.title = "Percentil contra jugadores de este héroe (promedios de final de partida, OpenDota)";
+        el.title = t("Percentil contra jugadores de este héroe (promedios de final de partida, OpenDota)");
       }
     })
     .catch(() => (benchRetryAt = Date.now() + 30_000));
@@ -391,7 +395,7 @@ function renderKeybinds() {
     ...ACTIONS.map((a) => {
       const row = el("label", "keybind");
       const btn = Object.assign(document.createElement("button"), {
-        textContent: capturing === a ? (a === "shop" ? "Presiona tecla o botón del mouse…" : "Ctrl/Alt/Shift + tecla, o botón del mouse…") : pretty(keyOf(a)),
+        textContent: capturing === a ? (a === "shop" ? t("Presiona tecla o botón del mouse…") : t("Ctrl/Alt/Shift + tecla, o botón del mouse…")) : pretty(keyOf(a)),
         onclick: () => { capturing = a; keyError = null; renderKeybinds(); },
       });
       btn.classList.toggle("capturing", capturing === a);
@@ -401,8 +405,8 @@ function renderKeybinds() {
     }),
   );
   // Textos de ayuda con los atajos actuales
-  $("edit-hint").textContent = `Arrastra los paneles · Clic: elegir panel para tamaño/opacidad · Doble clic: restablecer ese panel · ${pretty(keyOf("edit"))}: fijar`;
-  $("draft-hint").textContent = `${pretty(keyOf("draft"))}: escribir · Enter: agregar · 1-5: rol · rosh / torm: marcar muerte · Retroceso: quitar · Esc: cerrar`;
+  $("edit-hint").textContent = t("Arrastra los paneles · Clic: elegir panel para tamaño/opacidad · Doble clic: restablecer ese panel · {key}: fijar", { key: pretty(keyOf("edit")) });
+  $("draft-hint").textContent = t("{key}: escribir · Enter: agregar · 1-5: rol · rosh / torm: marcar muerte · Retroceso: quitar · Esc: cerrar", { key: pretty(keyOf("draft")) });
 }
 
 // Captura en fase de captura para que Esc cancele sin salir del modo mover.

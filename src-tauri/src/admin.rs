@@ -130,6 +130,26 @@ pub fn gsi_install() -> Result<String, String> {
     Ok(file.display().to_string())
 }
 
+/// Idioma de la interfaz guardado ("es" / "en"); por defecto español.
+pub fn lang(app: &AppHandle) -> String {
+    load(app)["lang"].as_str().unwrap_or("es").to_string()
+}
+
+/// Guarda el idioma y traduce el menú de la bandeja (el frontend lo guarda aparte en localStorage).
+#[tauri::command]
+pub fn set_lang(app: AppHandle, lang: String) -> Result<(), String> {
+    if lang != "es" && lang != "en" {
+        return Err("idioma desconocido".into());
+    }
+    let mut cfg = load(&app);
+    cfg["lang"] = lang.into();
+    save(&app, &cfg)?;
+    if let Some(tray) = app.tray_by_id("main") {
+        tray.set_menu(Some(crate::tray_menu(&app).map_err(|e| e.to_string())?)).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 /// Abre (o trae al frente) la ventana de configuración. Llamar desde el hilo principal.
 pub fn open_admin(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("admin") {

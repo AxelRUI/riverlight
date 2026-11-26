@@ -2,7 +2,8 @@
 name = "dota-plus-local"
 version = "0.1.0"
 description = "Overlay local tipo Dota Plus alimentado por Game State Integration"
-authors = ["Axel"]
+authors = []
+license = "MIT"
 edition = "2024"
 
 [lib]

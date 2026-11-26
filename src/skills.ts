@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Build de habilidades: orden real de partidas guía de STRATZ (alto MMR) para tu héroe y rol,
 // y qué te toca subir según lo que ya subiste (GSI).
 import { invoke } from "@tauri-apps/api/core";
@@ -29,7 +30,7 @@ export function medoid(seqs: number[][]): number[] {
 async function fetchBuild(heroId: number, pos: number): Promise<Skill[]> {
   const g = await query(`{ heroStats { guide(heroId: ${heroId}, positionId: POSITION_${pos}) { guides { matchId } } } }`);
   const ids: number[] = (g.heroStats.guide?.[0]?.guides ?? []).map((x: { matchId: number }) => x.matchId).slice(0, 10);
-  if (!ids.length) throw new Error("STRATZ no tiene partidas guía de tu héroe en este rol");
+  if (!ids.length) throw new Error(t("STRATZ no tiene partidas guía de tu héroe en este rol"));
 
   // Una sola consulta con alias: m0, m1... (matches(ids) pide permisos de admin).
   const m = await query(`{ ${ids.map((id, i) => `m${i}: match(id: ${id}) { players { heroId abilities { abilityId } } }`).join(" ")} }`);
@@ -37,7 +38,7 @@ async function fetchBuild(heroId: number, pos: number): Promise<Skill[]> {
     .map((_, i) => m[`m${i}`]?.players?.find((p: { heroId: number }) => p.heroId === heroId)?.abilities ?? [])
     .map((a: { abilityId: number }[]) => a.map((x) => x.abilityId))
     .filter((s: number[]) => s.length >= 6);
-  if (!seqs.length) throw new Error("las partidas guía no traen orden de habilidades");
+  if (!seqs.length) throw new Error(t("las partidas guía no traen orden de habilidades"));
   const build = medoid(seqs);
 
   const uniq = [...new Set(build)];

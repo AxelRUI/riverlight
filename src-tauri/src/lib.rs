@@ -75,7 +75,8 @@ fn set_shortcut(app: tauri::AppHandle, action: String, accel: String) -> Result<
         if let Some(old) = list[idx] {
             let _ = gs.register(old); // dejar el anterior funcionando
         }
-        return Err(format!("no se pudo registrar (¿lo usa otro programa?): {e}"));
+        eprintln!("atajo {accel}: {e}");
+        return Err("no se pudo registrar (¿lo usa otro programa?)".into()); // texto fijo: es la clave de traducción
     }
     list[idx] = Some(new);
     MOUSE_BINDS[idx].store(0, Ordering::SeqCst);
@@ -123,12 +124,10 @@ pub fn run() {
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))
         .setup(|app| {
             // Ícono en la bandeja: la app vive en segundo plano, así se puede cerrar.
-            let config = MenuItem::with_id(app, "config", "Configuración", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Salir de Dota Plus Local", true, None::<&str>)?;
-            TrayIconBuilder::new()
+            TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().cloned().ok_or("falta el ícono de la app")?)
                 .tooltip("Dota Plus Local")
-                .menu(&Menu::with_items(app, &[&config, &quit])?)
+                .menu(&tray_menu(app.handle())?)
                 .on_menu_event(|app, e| match e.id().as_ref() {
                     "config" => admin::open_admin(app),
                     "quit" => app.exit(0),
@@ -184,7 +183,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![stratz_items, stratz_query, exit_mode, set_shortcut, set_shop_key, set_mouse_bind,
-            admin::get_config, admin::set_keys, admin::set_autostart, admin::gsi_status, admin::gsi_install])
+            admin::get_config, admin::set_keys, admin::set_lang, admin::set_autostart, admin::gsi_status, admin::gsi_install])
         .build(tauri::generate_context!())
         .expect("error al iniciar la app")
         .run(|_app, event| {
@@ -193,6 +192,14 @@ pub fn run() {
                 api.prevent_exit();
             }
         });
+}
+
+/// Menú de la bandeja en el idioma guardado en Configuración.
+pub fn tray_menu(app: &tauri::AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
+    let en = admin::lang(app) == "en";
+    let config = MenuItem::with_id(app, "config", if en { "Settings" } else { "Configuración" }, true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", if en { "Exit Dota Plus Local" } else { "Salir de Dota Plus Local" }, true, None::<&str>)?;
+    Menu::with_items(app, &[&config, &quit])
 }
 
 /// Crea la ventana del overlay (definida en tauri.conf.json con "create": false) cubriendo el monitor y

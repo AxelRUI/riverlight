@@ -12,11 +12,11 @@
       <div class="panel">
         <header class="panel-title">Items</header>
         <section id="sugg" hidden>
-          <header class="sub-title">Sugeridos · <span id="phase"></span></header>
+          <header class="sub-title"><span data-i18n>Sugeridos</span> · <span id="phase"></span></header>
           <div id="sources"></div>
         </section>
         <section id="counters">
-          <header class="sub-title">Contra enemigos · <span id="counter-role"></span></header>
+          <header class="sub-title"><span data-i18n>Contra enemigos</span> · <span id="counter-role"></span></header>
           <ul id="counter-list"></ul>
         </section>
       </div>
@@ -25,7 +25,7 @@
     <!-- #hud se posiciona; .panel escala (zoom) y se transparenta, así top/left no se deforman -->
     <section id="hud" class="movable" hidden>
       <div class="panel">
-        <header class="panel-title">Asistente</header>
+        <header class="panel-title" data-i18n>Asistente</header>
         <div id="game">
           <!-- Cada stat con su percentil contra el héroe (OpenDota) desde el 10:00 -->
           <div class="stats">
@@ -36,7 +36,7 @@
           </div>
           <!-- Build de habilidades (STRATZ): qué subir ahora y lo que sigue -->
           <section id="skills" hidden>
-            <header class="sub-title">Habilidades · <span id="skill-role"></span></header>
+            <header class="sub-title"><span data-i18n>Habilidades</span> · <span id="skill-role"></span></header>
             <div class="skill-row">
               <img id="skill-img" alt="" />
               <div><div id="skill-name"></div><div id="skill-talent"></div></div>
@@ -51,17 +51,17 @@
         <div id="post" hidden></div>
 
         <div id="draft" hidden>
-          <div class="sub-title">Tu rol</div>
+          <div class="sub-title" data-i18n>Tu rol</div>
           <div id="roles" class="roles"></div>
-          <div class="sub-title">Enemigos</div>
+          <div class="sub-title" data-i18n>Enemigos</div>
           <div id="enemies" class="chips"></div>
           <div class="draft-input">
-            <input id="draft-input" placeholder="Héroe enemigo… (am, qop, axe)" autocomplete="off" spellcheck="false" />
+            <input id="draft-input" placeholder="Héroe enemigo… (am, qop, axe)" data-i18n-placeholder="Héroe enemigo… (am, qop, axe)" autocomplete="off" spellcheck="false" />
             <span id="draft-match"></span>
           </div>
           <!-- Picks recomendados: solo durante la selección, no a media partida -->
           <div class="picks">
-            <div class="sub-title">Recomendados · <span id="draft-role"></span></div>
+            <div class="sub-title"><span data-i18n>Recomendados</span> · <span id="draft-role"></span></div>
             <ul id="recs"></ul>
           </div>
           <div class="hint" id="draft-hint">Ctrl+Shift+D: escribir · Enter: agregar · 1-5: rol · rosh / torm: marcar muerte · Retroceso: quitar · Esc: cerrar</div>
@@ -71,7 +71,7 @@
 
     <!-- Overlay del minimapa: flechas de stack/pull. Se alinea y edita en modo mover. -->
     <section id="minimap" hidden>
-      <div id="mm-bar">Minimapa · arrastra para alinear</div>
+      <div id="mm-bar" data-i18n>Minimapa · arrastra para alinear</div>
       <svg id="mm-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
         <defs>
           <marker id="ah-stack" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3" markerHeight="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#e3c77c" /></marker>
@@ -86,8 +86,8 @@
 
     <div id="editbar">
       <span id="edit-hint">Arrastra los paneles · Clic: elegir panel para tamaño/opacidad · Doble clic: restablecer ese panel · Ctrl+Shift+M: fijar</span>
-      <label>Tamaño <input id="scale" type="range" min="0.6" max="2" step="0.05" value="1" /></label>
-      <label>Opacidad <input id="opacity" type="range" min="0.2" max="1" step="0.05" value="1" /></label>
+      <label><span data-i18n>Tamaño</span> <input id="scale" type="range" min="0.6" max="2" step="0.05" value="1" /></label>
+      <label><span data-i18n>Opacidad</span> <input id="opacity" type="range" min="0.2" max="1" step="0.05" value="1" /></label>
       <!-- Atajos: clic en uno y presiona la tecla nueva (Esc cancela) -->
       <div id="keybinds"></div>
     </div>

@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Overlay sobre el minimapa con las flechas de stack/pull. En modo mover (Ctrl+Shift+M) se alinea con
 // el minimapa real y se editan los campamentos.
 import { Camp, CampType, DEFAULT_AT, Phase, Side, Step, TYPE_LABEL, campState, defaultCamps, loadCamps, resetCamps, saveCamps } from "./stacks";
@@ -92,17 +93,17 @@ function renderInfo() {
   const c = camps.find((x) => x.id === selected);
   const head = c
     ? `${TYPE_LABEL[c.type]} · ${c.side} · stack :${c.at}` +
-      (c.double ? ` · doble → :${c.double.at}` : "") +
-      (c.pull ? ` · pull :${c.pull.at} (impares)` : "")
-    : "Clic en un campamento para editarlo · doble clic en vacío: nuevo";
+      (c.double ? t(" · doble → :{at}", { at: c.double.at }) : "") +
+      (c.pull ? t(" · pull :{at} (impares)", { at: c.pull.at }) : "")
+    : t("Clic en un campamento para editarlo · doble clic en vacío: nuevo");
   const keys = linking
-    ? "Clic en el campamento al que se hace el doble stack (Esc cancela)"
-    : "Arrastra campamento/punta · +/− segundo · T tipo · P pull · ,/. seg. pull · L doble · [/] seg. doble · Supr borrar";
+    ? t("Clic en el campamento al que se hace el doble stack (Esc cancela)")
+    : t("Arrastra campamento/punta · +/− segundo · T tipo · P pull · ,/. seg. pull · L doble · [/] seg. doble · Supr borrar");
   info.replaceChildren(
     Object.assign(document.createElement("div"), { textContent: head }),
     Object.assign(document.createElement("div"), { className: "keys", textContent: keys }),
     Object.assign(document.createElement("button"), {
-      textContent: "Restablecer campamentos",
+      textContent: t("Restablecer campamentos"),
       onclick: () => { resetCamps(); camps = defaultCamps(); selected = null; render(); },
     }),
   );

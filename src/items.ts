@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { od } from "./opendota";
 import { currentRole } from "./draft";
@@ -17,10 +18,10 @@ type Popularity = Partial<Record<Phase, Record<string, number>>>;
 export const SOURCE_LABEL: Record<Source, string> = { opendota: "OpenDota", stratz: "STRATZ" };
 
 export const PHASE_LABEL: Record<Phase, string> = {
-  start_game_items: "Inicial",
-  early_game_items: "Temprano",
-  mid_game_items: "Medio",
-  late_game_items: "Tardío",
+  start_game_items: t("Inicial"),
+  early_game_items: t("Temprano"),
+  mid_game_items: t("Medio"),
+  late_game_items: t("Tardío"),
 };
 
 // Mismos cortes que usa OpenDota en itemPopularity (0, <10, 10-25, >25 min).
@@ -33,7 +34,7 @@ export function phaseFor(t: number): Phase {
 
 async function getJson<T>(url: string): Promise<T> {
   const r = await fetch(url);
-  if (!r.ok) throw new Error(`${new URL(url).host} respondió ${r.status}`);
+  if (!r.ok) throw new Error(t("{host} respondió {status}", { host: new URL(url).host, status: r.status }));
   return r.json();
 }
 
@@ -67,7 +68,7 @@ const FETCHERS: Record<Source, (heroId: number) => Promise<Popularity>> = {
     // Items de tu rol del draft; si casi nadie juega el héroe en ese rol, todas las posiciones.
     let data = await invoke<StratzData>("stratz_items", { heroId, position: currentRole() });
     if (!hasRows(data)) data = await invoke<StratzData>("stratz_items", { heroId, position: null });
-    if (!hasRows(data)) throw new Error("STRATZ no devolvió datos para este héroe");
+    if (!hasRows(data)) throw new Error(t("STRATZ no devolvió datos para este héroe"));
     return stratzToPopularity(data!.full ?? [], data!.start ?? []);
   },
 };

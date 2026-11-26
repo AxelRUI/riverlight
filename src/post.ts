@@ -1,3 +1,4 @@
+import { LANG, t } from "./i18n";
 // Análisis post-partida, resumen de muertes e historial de las últimas 24 partidas. GSI no manda el daño
 // recibido en vivo, así que todo sale de la partida ya analizada por STRATZ (necesita "Exponer datos públicos
 // de partidas" en Dota; las partidas de práctica/lobby con bots no llegan a STRATZ). La partida recién
@@ -69,9 +70,9 @@ async function fetchMatch(e: Entry): Promise<Match> {
   const account = Number(localStorage.getItem(ACCOUNT_KEY) ?? 0);
   const players: Player[] = d.match?.players ?? [];
   const p = players.find((x) => account && x.steamAccountId === account) ?? players.find((x) => e.heroId && x.heroId === e.heroId);
-  if (!d.match) throw new Error("STRATZ todavía no tiene la partida");
-  if (!p) throw new Error("no te encontré en esa partida (¿es tuya y con datos públicos?)");
-  if (!p.stats?.heroDamageReport) throw new Error("STRATZ todavía no termina de analizarla");
+  if (!d.match) throw new Error(t("STRATZ todavía no tiene la partida"));
+  if (!p) throw new Error(t("no te encontré en esa partida (¿es tuya y con datos públicos?)"));
+  if (!p.stats?.heroDamageReport) throw new Error(t("STRATZ todavía no termina de analizarla"));
   const m = { duration: d.match.durationSeconds as number, p };
   localStorage.setItem(cacheKey, JSON.stringify(m)); // ya analizada no cambia: no volver a pedirla
   return m;
@@ -107,7 +108,7 @@ async function build(e: Entry) {
   if (me) head.append(img(me.img, me.name, "post-hero"));
   const title = el("div");
   title.append(
-    el("div", p.isVictory ? "win" : "loss", `${p.isVictory ? "Victoria" : "Derrota"} · ${fmt(duration)}`),
+    el("div", p.isVictory ? "win" : "loss", `${p.isVictory ? t("Victoria") : t("Derrota")} · ${fmt(duration)}`),
     el("div", "muted", `${p.kills}/${p.deaths}/${p.assists}` + (p.imp !== null ? ` · IMP ${p.imp}` : "") + (p.award && p.award !== "NONE" ? ` · ${p.award.replace(/_/g, " ").toLowerCase()}` : "")),
   );
   head.append(title);
@@ -120,7 +121,7 @@ async function build(e: Entry) {
       ["GPM", p.goldPerMinute, percentile(p.goldPerMinute, bench.gold_per_min ?? [])],
       ["XPM", p.experiencePerMinute, percentile(p.experiencePerMinute, bench.xp_per_min ?? [])],
       ["LH/min", +(p.numLastHits / min).toFixed(1), percentile(p.numLastHits / min, bench.last_hits_per_min ?? [])],
-      ["Daño/min", Math.round(p.heroDamage / min), percentile(p.heroDamage / min, bench.hero_damage_per_min ?? [])],
+      [t("Daño/min"), Math.round(p.heroDamage / min), percentile(p.heroDamage / min, bench.hero_damage_per_min ?? [])],
     ];
     const grid = el("div", "post-stats");
     for (const [label, value, pc] of rows) {
@@ -128,14 +129,14 @@ async function build(e: Entry) {
       cell.append(el("span", "lbl", label), el("span", "", String(value)), el("span", `pct ${pctClass(pc)}`, Number.isNaN(pc) ? "" : `p${pc}`));
       grid.append(cell);
     }
-    root.append(el("div", "sub-title", "Contra jugadores de tu héroe"), grid);
+    root.append(el("div", "sub-title", t("Contra jugadores de tu héroe")), grid);
   }
 
   // Daño recibido por tipo
-  const t = rep.receivedTotal;
-  const total = t.physicalDamage + t.magicalDamage + t.pureDamage || 1;
+  const rt = rep.receivedTotal; // (no se llama t: t() es la traducción)
+  const total = rt.physicalDamage + rt.magicalDamage + rt.pureDamage || 1;
   const bar = el("div", "dmg-bar");
-  for (const [cls, v, label] of [["phys", t.physicalDamage, "Físico"], ["mag", t.magicalDamage, "Mágico"], ["pure", t.pureDamage, "Puro"]] as const) {
+  for (const [cls, v, label] of [["phys", rt.physicalDamage, t("Físico")], ["mag", rt.magicalDamage, t("Mágico")], ["pure", rt.pureDamage, t("Puro")]] as const) {
     const seg = el("span", cls);
     seg.style.width = `${(v / total) * 100}%`;
     seg.title = `${label}: ${v.toLocaleString()} (${Math.round((v / total) * 100)}%)`;
@@ -144,9 +145,9 @@ async function build(e: Entry) {
   const legend = el(
     "div",
     "muted",
-    `Físico ${Math.round((t.physicalDamage / total) * 100)}% · Mágico ${Math.round((t.magicalDamage / total) * 100)}% · Puro ${Math.round((t.pureDamage / total) * 100)}% · stun ${(t.stunDuration / 100).toFixed(1)} s`,
+    t("Físico {p}% · Mágico {m}% · Puro {u}% · stun {s} s", { p: Math.round((rt.physicalDamage / total) * 100), m: Math.round((rt.magicalDamage / total) * 100), u: Math.round((rt.pureDamage / total) * 100), s: (rt.stunDuration / 100).toFixed(1) }),
   );
-  root.append(el("div", "sub-title", `Daño recibido · ${total.toLocaleString()}`), bar, legend);
+  root.append(el("div", "sub-title", t("Daño recibido · {n}", { n: total.toLocaleString() })), bar, legend);
 
   // Quién te hizo daño
   const who = el("div", "who");
@@ -157,7 +158,7 @@ async function build(e: Entry) {
     w.append(img(h.img, h.name), el("b", "", `${(r.amount / 1000).toFixed(1)}k`));
     who.append(w);
   }
-  if (topAbilities.length) who.append(el("div", "muted", "Más daño: " + topAbilities.map((a) => `${names.get(a.abilityId)} ${(a.amount / 1000).toFixed(1)}k`).join(" · ")));
+  if (topAbilities.length) who.append(el("div", "muted", t("Más daño: ") + topAbilities.map((a) => `${names.get(a.abilityId)} ${(a.amount / 1000).toFixed(1)}k`).join(" · ")));
   root.append(who);
 
   // Muertes
@@ -165,20 +166,20 @@ async function build(e: Entry) {
   for (const d of deaths) {
     const li = el("li");
     const k = heroById(d.attacker);
-    const how = d.byAbility ? names.get(d.byAbility) : d.byItem ? items.get(d.byItem)?.dname : "ataque";
+    const how = d.byAbility ? names.get(d.byAbility) : d.byItem ? items.get(d.byItem)?.dname : t("ataque");
     li.append(el("span", "muted", fmt(d.time)));
     if (k) li.append(img(k.img, k.name));
     li.append(el("span", "", `${k?.name ?? "?"} · ${how ?? "?"}`));
-    li.append(el("span", "muted", `−${d.goldLost} oro · ${d.timeDead} s` + (d.isBurst ? " · burst" : "")));
+    li.append(el("span", "muted", t("−{gold} oro · {s} s", { gold: d.goldLost, s: d.timeDead }) + (d.isBurst ? " · burst" : "")));
     list.append(li);
   }
-  root.append(el("div", "sub-title", `Muertes · ${deaths.length}`), deaths.length ? list : el("div", "muted", "Sin muertes 👌"));
+  root.append(el("div", "sub-title", t("Muertes · {n}", { n: deaths.length })), deaths.length ? list : el("div", "muted", t("Sin muertes 👌")));
   return root;
 }
 
 // --- Historial ---
 const fmtDate = (ms: number) =>
-  new Date(ms).toLocaleString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  new Date(ms).toLocaleString(LANG === "en" ? "en-US" : "es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 function historyList() {
   const ul = el("ul", "history");
@@ -190,14 +191,14 @@ function historyList() {
     li.append(
       el("span", "muted", fmtDate(e.date)),
       el("span", "", h?.name ?? (e.heroId ? `#${e.heroId}` : `ID ${e.matchId}`)),
-      el("span", e.win === true ? "win" : e.win === false ? "loss" : "muted", `${e.win === true ? "V" : e.win === false ? "D" : ""} ${kda}`.trim()),
+      el("span", e.win === true ? "win" : e.win === false ? "loss" : "muted", `${e.win === true ? t("V") : e.win === false ? t("D") : ""} ${kda}`.trim()),
     );
     if (e.imp !== undefined && e.imp !== null) li.append(el("span", "muted", `IMP ${e.imp}`));
     li.onclick = () => select(i);
     ul.append(li);
   });
   // Ver cualquier partida pública escribiendo su ID (p. ej. una que jugaste con la app cerrada).
-  const input = Object.assign(document.createElement("input"), { placeholder: "ID de partida + Enter", inputMode: "numeric" });
+  const input = Object.assign(document.createElement("input"), { placeholder: t("ID de partida + Enter"), inputMode: "numeric" });
   input.className = "match-input";
   input.onkeydown = (ev) => {
     if (ev.key !== "Enter") return;
@@ -218,8 +219,8 @@ function addEntry(e: Entry) {
 
 function render() {
   const box = document.getElementById("post")!;
-  const head = el("div", "sub-title", interactive ? "Partidas · ↑/↓ o clic para elegir · Esc cierra" : `Última partida · ${pretty(keyOf("post"))}: historial`);
-  const body = content ?? el("div", "items-error", status || (history.length ? "" : "Aún no hay partidas registradas."));
+  const head = el("div", "sub-title", interactive ? t("Partidas · ↑/↓ o clic para elegir · Esc cierra") : t("Última partida · {key}: historial", { key: pretty(keyOf("post")) }));
+  const body = content ?? el("div", "items-error", status || (history.length ? "" : t("Aún no hay partidas registradas.")));
   box.replaceChildren(head, ...(interactive && history.length ? [historyList()] : []), body);
 }
 
@@ -229,11 +230,11 @@ function select(i: number) {
   selected = i;
   const e = history[i];
   content = null;
-  status = "Cargando…";
+  status = t("Cargando…");
   render();
   build(e)
     .then((c) => { if (history[selected] === e) { content = c; status = ""; render(); } })
-    .catch((err) => { if (history[selected] === e) { status = err instanceof Error ? err.message : String(err); render(); } });
+    .catch((err) => { if (history[selected] === e) { status = t(err instanceof Error ? err.message : String(err)); render(); } });
 }
 
 /** La partida recién terminada: reintenta hasta que STRATZ la analice y entonces se muestra sola. */
@@ -247,8 +248,8 @@ async function attempt(e: Entry) {
     onChange();
   } catch (err) {
     if (history[selected] === e) {
-      status = `${err instanceof Error ? err.message : String(err)} (intento ${tries}/${MAX_TRIES})`;
-      if (tries >= MAX_TRIES) status = "STRATZ no analizó la partida. ¿Tienes activado exponer datos públicos de partidas?";
+      status = t("{msg} (intento {n}/{max})", { msg: t(err instanceof Error ? err.message : String(err)), n: tries, max: MAX_TRIES });
+      if (tries >= MAX_TRIES) status = t("STRATZ no analizó la partida. ¿Tienes activado exponer datos públicos de partidas?");
       render();
     }
     if (tries < MAX_TRIES) timer = window.setTimeout(() => attempt(e), RETRY_MS);
@@ -263,7 +264,7 @@ export function onGameEnd(e: Entry) {
   tries = 0;
   selected = 0;
   content = null;
-  status = "Esperando a que STRATZ analice la partida…";
+  status = t("Esperando a que STRATZ analice la partida…");
   render();
   attempt(history[0]);
 }

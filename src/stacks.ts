@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 // Campamentos neutrales para el overlay del minimapa: dónde están, hacia dónde jalar y en qué segundo.
 // Fuentes (nov 2026): dota2-tools.com/stack-timer (grandes/ancestrales :53, medianos :54, pequeños :55;
 // el mediano junto a la T2 de arriba de Dire ~:56, sin aplicar: no se sabe cuál triángulo es) y teamsmurf
@@ -26,7 +27,7 @@ export type Camp = {
   pull?: { at: number; dx: number; dy: number };
 };
 
-export const TYPE_LABEL: Record<CampType, string> = { small: "Pequeño", medium: "Mediano", large: "Grande", ancient: "Ancestral" };
+export const TYPE_LABEL: Record<CampType, string> = { small: t("Pequeño"), medium: t("Mediano"), large: t("Grande"), ancient: t("Ancestral") };
 export const DEFAULT_AT: Record<CampType, number> = { small: 55, medium: 54, large: 53, ancient: 53 };
 
 // Posiciones medidas en una captura del minimapa (nov 2026): cada triángulo dorado es un campamento; los dos

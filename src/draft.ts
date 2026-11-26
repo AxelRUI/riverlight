@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 import { keyOf, pretty } from "./keys";
 import { od } from "./opendota";
 // Recomendaciones de pick: picks enemigos escritos a mano (GSI no los da al jugador) + matchups de OpenDota.
@@ -17,8 +18,8 @@ export const ROLES: { pos: number; label: string; fits: (r: string[]) => boolean
   { pos: 1, label: "Carry", fits: (r) => r[0] === "Carry" },
   { pos: 2, label: "Mid", fits: (r) => r[0] !== "Support" && (r.includes("Nuker") || r.includes("Escape")) },
   { pos: 3, label: "Offlane", fits: (r) => r[0] !== "Support" && (r.includes("Initiator") || r.includes("Durable")) },
-  { pos: 4, label: "Soporte 4", fits: (r) => r.includes("Support") || (r.includes("Initiator") && r.includes("Disabler")) },
-  { pos: 5, label: "Soporte 5", fits: (r) => r.includes("Support") },
+  { pos: 4, label: t("Soporte 4"), fits: (r) => r.includes("Support") || (r.includes("Initiator") && r.includes("Disabler")) },
+  { pos: 5, label: t("Soporte 5"), fits: (r) => r.includes("Support") },
 ];
 
 // Guion cuenta como espacio para que "Anti-Mage" tenga iniciales "am".
@@ -26,7 +27,7 @@ const norm = (s: string) => s.toLowerCase().replace(/-/g, " ").replace(/[^a-z0-9
 
 async function getJson<T>(url: string): Promise<T> {
   const r = await fetch(url);
-  if (!r.ok) throw new Error(`${new URL(url).host} respondió ${r.status}`);
+  if (!r.ok) throw new Error(t("{host} respondió {status}", { host: new URL(url).host, status: r.status }));
   return r.json();
 }
 
@@ -142,7 +143,7 @@ async function render() {
   $("draft-role").textContent = ROLES.find((r) => r.pos === pos)!.label;
   $("enemies").replaceChildren(
     ...enemies.map((h) => {
-      const chip = Object.assign(document.createElement("img"), { src: h.img, alt: h.name, title: `${h.name} (clic para quitar)` });
+      const chip = Object.assign(document.createElement("img"), { src: h.img, alt: h.name, title: t("{name} (clic para quitar)", { name: h.name }) });
       chip.onclick = () => { enemies = enemies.filter((e) => e !== h); render(); };
       return chip;
     }),
@@ -150,7 +151,7 @@ async function render() {
 
   const recs = $("recs");
   if (!enemies.length) {
-    recs.replaceChildren(Object.assign(document.createElement("li"), { className: "items-error", textContent: `Agrega picks enemigos con ${pretty(keyOf("draft"))}` }));
+    recs.replaceChildren(Object.assign(document.createElement("li"), { className: "items-error", textContent: t("Agrega picks enemigos con {key}", { key: pretty(keyOf("draft")) }) }));
     return;
   }
   const token = ++renderToken; // si cambian los enemigos mientras carga, solo vale la última respuesta
@@ -170,7 +171,7 @@ async function render() {
     );
   } catch (e) {
     if (token !== renderToken) return;
-    recs.replaceChildren(Object.assign(document.createElement("li"), { className: "items-error", textContent: e instanceof Error ? e.message : String(e) }));
+    recs.replaceChildren(Object.assign(document.createElement("li"), { className: "items-error", textContent: t(e instanceof Error ? e.message : String(e)) }));
   }
 }
 
